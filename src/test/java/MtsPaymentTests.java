@@ -27,19 +27,14 @@ public class MtsPaymentTests extends BaseTest {
 
     @Test(priority = 2)
     public void testMobilePaymentForm() {
-        // Выбираем "Услуги связи"
-        mtsHomePage.selectServiceType("Услуги связи");
-
-        // Заполняем форму
+        mtsHomePage.selectConnectionService("Услуги связи");
         mtsHomePage.fillPaymentForm(TEST_PHONE, TEST_AMOUNT);
 
-        // Переключаемся на платежный фрейм и проверяем данные
         PaymentFrame paymentFrame = mtsHomePage.switchToPaymentFrame();
         paymentFrame.verifyPaymentDetails(TEST_AMOUNT, TEST_PHONE);
         paymentFrame.verifyCardFieldsPlaceholders();
         paymentFrame.verifyPaymentSystemsIcons();
 
-        // Возвращаемся к основному контенту
         driver.switchTo().defaultContent();
     }
 

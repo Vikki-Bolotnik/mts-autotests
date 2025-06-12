@@ -34,13 +34,14 @@ public class MtsHomePage {
 
     private final By serviceTypeDropdown = By.cssSelector("div.select__wrapper");
     private final By serviceOptions = By.cssSelector("ul.select__list");
+    private final By serviceConnection = By.cssSelector("li.select__item.active");
 
     private final By paymentIframe = By.cssSelector("iframe.bepaid-iframe");
     private final By cookieAcceptButton = By.id("cookie-agree");
 
     public MtsHomePage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     public void acceptCookies() {
@@ -56,13 +57,7 @@ public class MtsHomePage {
     public void selectServiceType(String serviceName) {
         driver.findElement(serviceTypeDropdown).click();
         List<WebElement> options = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(serviceOptions));
-//        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-//        WebElement selectList = wait.until(ExpectedConditions.visibilityOfElementLocated(
-//                By.cssSelector("ul.select__list")
-//        ));
-//
-//// Получение всех элементов списка
-//        List<WebElement> options = selectList.findElements(By.tagName("li"));
+
         for (WebElement option : options) {
             if (option.getText().contains(serviceName)) {
                 option.click();
@@ -106,13 +101,23 @@ public class MtsHomePage {
                 "Incorrect placeholder for " + locator.toString());
     }
 
+    public void selectConnectionService(String serviceName) {
+        driver.findElement(serviceTypeDropdown).click();
+
+        if (serviceName != null && !serviceName.isEmpty()) {
+            WebElement serviceOption = wait.until(ExpectedConditions.
+                    visibilityOfElementLocated(serviceConnection));
+            serviceOption.click();
+        } else {
+            throw new IllegalArgumentException("Service name cannot be null or empty");
+        }
+    }
+
     public void fillPaymentForm(String phone, String amount) {
         WebElement phoneField = wait.until(ExpectedConditions.visibilityOfElementLocated(connectionPhoneInputField));
-        phoneField.clear();
         phoneField.sendKeys(phone);
 
         WebElement amountField = driver.findElement(connectionAmountInputField);
-        amountField.clear();
         amountField.sendKeys(amount);
 
         WebElement continueBtn = driver.findElement(continueButton);

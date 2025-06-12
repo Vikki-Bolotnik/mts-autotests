@@ -10,18 +10,18 @@ public class PaymentFrame {
     private final WebDriverWait wait;
 
     // Локаторы
-    private final By paymentAmount = By.xpath("//h1[contains(text(), 'BYN')]");
-    private final By phoneNumber = By.xpath("//div[contains(text(), 'Номер:')]");
-    private final By cardNumberField = By.xpath("//label[contains(text(), 'Номер карты')]/following-sibling::input");
+    private final By paymentAmount = By.xpath("//div[contains(@class, 'pay-description__cost')]/span");
+    private final By phoneNumber = By.cssSelector("div.pay-description__text");
+    private final By cardNumberField = By.id("cc-number");
     private final By expiryDateField = By.xpath("//label[contains(text(), 'Срок действия')]/following-sibling::input");
     private final By cvcField = By.xpath("//label[contains(text(), 'CVC')]/following-sibling::input");
     private final By cardNameField = By.xpath("//label[contains(text(), 'Имя и фамилия на карте')]/following-sibling::input");
     private final By paymentSystemsIcons = By.cssSelector("div.card-icons img");
-    private final By payButton = By.xpath("//button[contains(text(), 'Оплатить')]");
+    private final By payButton = By.xpath("//button[contains(text(),'Оплатить')]");
 
     public PaymentFrame(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     public void verifyPaymentDetails(String expectedAmount, String expectedPhone) {
@@ -33,7 +33,7 @@ public class PaymentFrame {
 
         // Проверка суммы на кнопке оплаты
         WebElement payBtn = driver.findElement(payButton);
-        String buttonText = payBtn.getText();
+        String buttonText = payBtn.getText().trim();
         Assert.assertTrue(buttonText.contains(expectedAmount),
                 "Pay button amount doesn't match. Expected: " + expectedAmount + ", Actual: " + buttonText);
 

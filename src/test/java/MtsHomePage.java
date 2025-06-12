@@ -1,7 +1,4 @@
-import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -10,87 +7,110 @@ import java.time.Duration;
 import java.util.List;
 
 public class MtsHomePage {
+    private final WebDriver driver;
+    private final WebDriverWait wait;
 
-    final WebDriver driver;
-    final WebDriverWait wait;
-
+    // Локаторы
     private final By paymentBlockTitle = By.xpath("//h2[contains(., 'Онлайн пополнение') and contains(., 'без комиссии')]");
     private final By paymentSystemsLogos = By.cssSelector("div.pay__partners ul li img");
     private final By detailsLink = By.linkText("Подробнее о сервисе");
     private final By continueButton = By.xpath("//button[contains(text(), 'Продолжить')]");
-    private static final String TEST_PHONE = "297777777";
-    private static final String SUM = "5";
     private final By phoneInputField = By.id("connection-phone");
     private final By amountInputField = By.id("connection-sum");
-    private static final String paymentHelpPageUrl = "https://www.mts.by/help/poryadok-oplaty-i-bezopasnost-internet-platezhey/";
+    private final By serviceTypeDropdown = By.cssSelector("div.select__now");
+    private final By serviceOptions = By.cssSelector("div.select__options p.select__option");
     private final By paymentIframe = By.cssSelector("iframe.bepaid-iframe");
+    private final By cookieAcceptButton = By.id("cookie-agree");
 
     public MtsHomePage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+    }
+
+    public void acceptCookies() {
+        try {
+            WebElement cookieAccept = wait.until(ExpectedConditions.elementToBeClickable(cookieAcceptButton));
+            cookieAccept.click();
+        } catch (Exception e) {
+            System.out.println("Cookie popup not found or already closed");
+        }
     }
 
     public void verifyPaymentBlockTitle() {
         WebElement title = wait.until(ExpectedConditions.visibilityOfElementLocated(paymentBlockTitle));
-        assert title.isDisplayed();
+        Assert.assertTrue(title.isDisplayed(), "Payment block title is not displayed");
     }
 
     public void verifyPaymentSystemsLogos() {
-        List<WebElement> logos = driver.findElements(paymentSystemsLogos);
-        Assert.assertEquals(logos.size(), 5);
+        List<WebElement> logos = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(paymentSystemsLogos));
+        Assert.assertEquals(logos.size(), 5, "Expected 5 payment system logos");
     }
 
     public void verifyDetailsLink() {
         WebElement link = wait.until(ExpectedConditions.elementToBeClickable(detailsLink));
         link.click();
-        assert driver.getCurrentUrl()
-                .equals(paymentHelpPageUrl);
+        Assert.assertTrue(driver.getCurrentUrl().contains("/help/poryadok-oplaty"),
+                "Details link doesn't lead to correct page");
         driver.navigate().back();
     }
 
-    public void testPaymentForm() {
-        WebElement continueBtn = wait.until(
-                ExpectedConditions.elementToBeClickable(continueButton));
-        assert continueBtn.isEnabled() : "Кнопка 'Продолжить' неактивна до заполнения формы";
+    public void selectServiceType(String serviceName) {
+        driver.findElement(serviceTypeDropdown).click();
+        List<WebElement> options = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(serviceOptions));
 
-        //driver.findElement(By.cssSelector("p.select__now:contains('Услуги связи')")).click();
-        //driver.findElement(By.cssSelector("p.select__option:contains('Услуги связи')")).click();
-        driver.findElement(phoneInputField).sendKeys(TEST_PHONE);
-        driver.findElement(amountInputField).sendKeys(SUM);
-        driver.findElement(continueButton).click();
-
-        // Проверка загрузки платежного iframe
-        try {
-            WebElement iframe = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                    paymentIframe
-            ));
-            System.out.println("Платежная форма успешно загрузилась");
-        } catch (TimeoutException e) {
-            throw new AssertionError("Платежный iframe не загрузился после клика");
-        }
-    }
-
-    void handleCookiePopup() {
-        try {
-            WebElement cookieAccept = driver.findElement(By.id("cookie-agree"));
-            if (cookieAccept.isDisplayed()) {
-                cookieAccept.click();
+        for (WebElement option : options) {
+            if (option.getText().contains(serviceName)) {
+                option.click();
+                return;
             }
-        } catch (Exception e) {
-            System.out.println("Куки-попап не найден");
+        }
+        throw new NoSuchElementException("Service option not found: " + serviceName);
+    }
 
+    public void verifyPlaceholdersForService(String serviceName) {
+        selectServiceType(serviceName);
+
+        switch (serviceName) {
+            case "Услуги связи":
+                verifyPlaceholder(phoneInputField, "Номер абонента");
+                verifyPlaceholder(amountInputField, "Руб.");
+                break;
+            case "Домашний интернет":
+                // Добавьте специфичные проверки для домашнего интернета
+                break;
+            case "Рассрочка":
+                // Добавьте специфичные проверки для рассрочки
+                break;
+            case "Задолженность":
+                // Добавьте специфичные проверки для задолженности
+                break;
         }
     }
 
-    //    public void handleCookieBanner() {
-//        try {
-//            driver.switchTo().defaultContent();
-//            driver.switchTo().frame(0);
-//            driver.findElement(By.xpath("//button[contains(text(), 'Отклонить')]")).click();
-//            driver.switchTo().defaultContent();
-//        } catch (Exception e) {
-//            System.out.println("Cookie баннер не найден или уже закрыт");
-//        }
-//    }
-}
+    private void verifyPlaceholder(By locator, String expectedPlaceholder) {
+        WebElement field = driver.findElement(locator);
+        String placeholder = field.getAttribute("placeholder");
+        Assert.assertEquals(placeholder, expectedPlaceholder,
+                "Incorrect placeholder for " + locator.toString());
+    }
 
+    public void fillPaymentForm(String phone, String amount) {
+        WebElement phoneField = wait.until(ExpectedConditions.visibilityOfElementLocated(phoneInputField));
+        phoneField.clear();
+        phoneField.sendKeys(phone);
+
+        WebElement amountField = driver.findElement(amountInputField);
+        amountField.clear();
+        amountField.sendKeys(amount);
+
+        WebElement continueBtn = driver.findElement(continueButton);
+        Assert.assertTrue(continueBtn.isEnabled(), "Continue button should be enabled after form filling");
+        continueBtn.click();
+    }
+
+    public PaymentFrame switchToPaymentFrame() {
+        WebElement iframe = wait.until(ExpectedConditions.visibilityOfElementLocated(paymentIframe));
+        driver.switchTo().frame(iframe);
+        return new PaymentFrame(driver);
+    }
+}

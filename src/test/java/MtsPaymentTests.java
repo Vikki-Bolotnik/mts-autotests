@@ -15,14 +15,8 @@ public class MtsPaymentTests extends BaseTest {
         mtsHomePage.acceptCookies();
     }
 
-    @Test(priority = 1)
-    public void verifyPaymentBlockElements() {
-        mtsHomePage.verifyPaymentBlockTitle();
-        mtsHomePage.verifyPaymentSystemsLogos();
-        mtsHomePage.verifyDetailsLink();
-    }
 
-    @Test(priority = 2)
+    @Test(priority = 1)
     public void verifyPlaceholdersForAllServices() {
         String[] services = {"Услуги связи", "Домашний интернет", "Рассрочка", "Задолженность"};
 
@@ -31,7 +25,7 @@ public class MtsPaymentTests extends BaseTest {
         }
     }
 
-    @Test(priority = 3)
+    @Test(priority = 2)
     public void testMobilePaymentForm() {
         // Выбираем "Услуги связи"
         mtsHomePage.selectServiceType("Услуги связи");

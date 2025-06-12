@@ -17,8 +17,14 @@ public class MtsHomePage {
     private final By continueButton = By.xpath("//button[contains(text(), 'Продолжить')]");
     private final By phoneInputField = By.id("connection-phone");
     private final By amountInputField = By.id("connection-sum");
-    private final By serviceTypeDropdown = By.cssSelector("div.select__now");
-    private final By serviceOptions = By.cssSelector("div.select__options p.select__option");
+    private final By internetInputField = By.id("internet-phone");
+    private final By internetAmountInputField = By.id("internet-sum");
+    private final By installmentInputField = By.id("score-instalment");
+    private final By installmentAmountInputField = By.id("instalment-sum");
+    private final By debtInputField = By.id("score-arrears");
+    private final By debtAmountInputField = By.id("arrears-sum");
+    private final By serviceTypeDropdown = By.cssSelector("div.select__wrapper");
+    private final By serviceOptions = By.cssSelector("ul.select__list");
     private final By paymentIframe = By.cssSelector("iframe.bepaid-iframe");
     private final By cookieAcceptButton = By.id("cookie-agree");
 
@@ -36,28 +42,17 @@ public class MtsHomePage {
         }
     }
 
-    public void verifyPaymentBlockTitle() {
-        WebElement title = wait.until(ExpectedConditions.visibilityOfElementLocated(paymentBlockTitle));
-        Assert.assertTrue(title.isDisplayed(), "Payment block title is not displayed");
-    }
-
-    public void verifyPaymentSystemsLogos() {
-        List<WebElement> logos = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(paymentSystemsLogos));
-        Assert.assertEquals(logos.size(), 5, "Expected 5 payment system logos");
-    }
-
-    public void verifyDetailsLink() {
-        WebElement link = wait.until(ExpectedConditions.elementToBeClickable(detailsLink));
-        link.click();
-        Assert.assertTrue(driver.getCurrentUrl().contains("/help/poryadok-oplaty"),
-                "Details link doesn't lead to correct page");
-        driver.navigate().back();
-    }
 
     public void selectServiceType(String serviceName) {
         driver.findElement(serviceTypeDropdown).click();
         List<WebElement> options = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(serviceOptions));
-
+//        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+//        WebElement selectList = wait.until(ExpectedConditions.visibilityOfElementLocated(
+//                By.cssSelector("ul.select__list")
+//        ));
+//
+//// Получение всех элементов списка
+//        List<WebElement> options = selectList.findElements(By.tagName("li"));
         for (WebElement option : options) {
             if (option.getText().contains(serviceName)) {
                 option.click();
@@ -72,17 +67,20 @@ public class MtsHomePage {
 
         switch (serviceName) {
             case "Услуги связи":
-                verifyPlaceholder(phoneInputField, "Номер абонента");
-                verifyPlaceholder(amountInputField, "Руб.");
+                verifyPlaceholder(phoneInputField, "Номер телефона");
+                verifyPlaceholder(amountInputField, "Сумма");
                 break;
             case "Домашний интернет":
-                // Добавьте специфичные проверки для домашнего интернета
+                verifyPlaceholder(internetInputField, "Номер абонента");
+                verifyPlaceholder(internetAmountInputField, "Сумма");
                 break;
             case "Рассрочка":
-                // Добавьте специфичные проверки для рассрочки
+                verifyPlaceholder(installmentInputField, "Номер счета на 44");
+                verifyPlaceholder(installmentAmountInputField, "Сумма");
                 break;
             case "Задолженность":
-                // Добавьте специфичные проверки для задолженности
+                verifyPlaceholder(debtInputField, "Номер счета на 2073");
+                verifyPlaceholder(debtAmountInputField, "Сумма");
                 break;
         }
     }

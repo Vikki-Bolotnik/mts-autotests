@@ -15,16 +15,26 @@ public class MtsHomePage {
     private final By paymentSystemsLogos = By.cssSelector("div.pay__partners ul li img");
     private final By detailsLink = By.linkText("Подробнее о сервисе");
     private final By continueButton = By.xpath("//button[contains(text(), 'Продолжить')]");
-    private final By phoneInputField = By.id("connection-phone");
-    private final By amountInputField = By.id("connection-sum");
+
+    private final By connectionPhoneInputField = By.id("connection-phone");
+    private final By connectionAmountInputField = By.id("connection-sum");
+    private final By connectionEmailInputField = By.id("connection-email");
+
     private final By internetInputField = By.id("internet-phone");
     private final By internetAmountInputField = By.id("internet-sum");
+    private final By internetEmailInputField = By.id("internet-email");
+
     private final By installmentInputField = By.id("score-instalment");
     private final By installmentAmountInputField = By.id("instalment-sum");
+    private final By installmentEmailInputField = By.id("instalment-email");
+
     private final By debtInputField = By.id("score-arrears");
     private final By debtAmountInputField = By.id("arrears-sum");
+    private final By debtEmailInputField = By.id("arrears-email");
+
     private final By serviceTypeDropdown = By.cssSelector("div.select__wrapper");
     private final By serviceOptions = By.cssSelector("ul.select__list");
+
     private final By paymentIframe = By.cssSelector("iframe.bepaid-iframe");
     private final By cookieAcceptButton = By.id("cookie-agree");
 
@@ -67,20 +77,24 @@ public class MtsHomePage {
 
         switch (serviceName) {
             case "Услуги связи":
-                verifyPlaceholder(phoneInputField, "Номер телефона");
-                verifyPlaceholder(amountInputField, "Сумма");
+                verifyPlaceholder(connectionPhoneInputField, "Номер телефона");
+                verifyPlaceholder(connectionAmountInputField, "Сумма");
+                verifyPlaceholder(connectionEmailInputField, "E-mail для отправки чека");
                 break;
             case "Домашний интернет":
                 verifyPlaceholder(internetInputField, "Номер абонента");
                 verifyPlaceholder(internetAmountInputField, "Сумма");
+                verifyPlaceholder(internetEmailInputField, "E-mail для отправки чека");
                 break;
             case "Рассрочка":
                 verifyPlaceholder(installmentInputField, "Номер счета на 44");
                 verifyPlaceholder(installmentAmountInputField, "Сумма");
+                verifyPlaceholder(installmentEmailInputField, "E-mail для отправки чека");
                 break;
             case "Задолженность":
                 verifyPlaceholder(debtInputField, "Номер счета на 2073");
                 verifyPlaceholder(debtAmountInputField, "Сумма");
+                verifyPlaceholder(debtEmailInputField, "E-mail для отправки чека");
                 break;
         }
     }
@@ -93,11 +107,11 @@ public class MtsHomePage {
     }
 
     public void fillPaymentForm(String phone, String amount) {
-        WebElement phoneField = wait.until(ExpectedConditions.visibilityOfElementLocated(phoneInputField));
+        WebElement phoneField = wait.until(ExpectedConditions.visibilityOfElementLocated(connectionPhoneInputField));
         phoneField.clear();
         phoneField.sendKeys(phone);
 
-        WebElement amountField = driver.findElement(amountInputField);
+        WebElement amountField = driver.findElement(connectionAmountInputField);
         amountField.clear();
         amountField.sendKeys(amount);
 

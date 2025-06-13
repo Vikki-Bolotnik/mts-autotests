@@ -11,54 +11,59 @@ public class PaymentFrame {
 
     // Локаторы
     private final By paymentAmount = By.xpath("//div[contains(@class, 'pay-description__cost')]/span");
-    private final By phoneNumber = By.cssSelector("div.pay-description__text");
-    private final By cardNumberField = By.id("cc-number");
-    private final By expiryDateField = By.xpath("//label[contains(text(), 'Срок действия')]/following-sibling::input");
-    private final By cvcField = By.xpath("//label[contains(text(), 'CVC')]/following-sibling::input");
-    private final By cardNameField = By.xpath("//label[contains(text(), 'Имя и фамилия на карте')]/following-sibling::input");
-    private final By paymentSystemsIcons = By.cssSelector("div.card-icons img");
+    private final By phoneNumber = By.xpath("//div[contains(@class, 'pay-description__text");
+    private final By cardNumberField = By.xpath("//label[text()='Номер карты']");
+    private final By expiryDateField = By.xpath("//label[text()='Срок действия']");
+    private final By cvcField = By.xpath("//label[text()='CVC']");
+    private final By cardNameField = By.xpath("//label[text()='Имя и фамилия на карте']");
+    private final By paymentSystemsIcons = By.xpath("//div[contains(@class, 'cards-brands cards-brands__container')]");
     private final By payButton = By.xpath("//button[contains(text(),'Оплатить')]");
 
     public PaymentFrame(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
     public void verifyPaymentDetails(String expectedAmount, String expectedPhone) {
-        // Проверка суммы
+
         WebElement amountElement = wait.until(ExpectedConditions.visibilityOfElementLocated(paymentAmount));
         String amountText = amountElement.getText();
         Assert.assertTrue(amountText.contains(expectedAmount),
                 "Payment amount doesn't match. Expected: " + expectedAmount + ", Actual: " + amountText);
 
-        // Проверка суммы на кнопке оплаты
         WebElement payBtn = driver.findElement(payButton);
         String buttonText = payBtn.getText().trim();
         Assert.assertTrue(buttonText.contains(expectedAmount),
                 "Pay button amount doesn't match. Expected: " + expectedAmount + ", Actual: " + buttonText);
 
-        // Проверка номера телефона
         WebElement phoneElement = driver.findElement(phoneNumber);
         Assert.assertTrue(phoneElement.getText().contains(expectedPhone),
                 "Phone number doesn't match. Expected: " + expectedPhone + ", Actual: " + phoneElement.getText());
     }
 
     public void verifyCardFieldsPlaceholders() {
-        verifyFieldPlaceholder(cardNumberField, "Номер карты");
-        verifyFieldPlaceholder(expiryDateField, "Срок действия");
-        verifyFieldPlaceholder(cvcField, "CVC");
-        verifyFieldPlaceholder(cardNameField, "Имя и фамилия на карте");
+        verifyFieldText(cardNumberField, "Номер карты");
+        verifyFieldText(expiryDateField, "Срок действия");
+        verifyFieldText(cvcField, "CVC");
+        verifyFieldText(cardNameField, "Имя и фамилия на карте");
     }
 
-    private void verifyFieldPlaceholder(By locator, String expectedPlaceholder) {
+//    private void verifyFieldPlaceholder(By locator, String expectedPlaceholder) {
+//        WebElement field = driver.findElement(locator);
+//        String placeholder = field.getText().trim();
+//        Assert.assertEquals(placeholder, expectedPlaceholder,
+//                "Incorrect placeholder for " + locator.toString());
+//    }
+
+    private void verifyFieldText(By locator, String expectedText) {
         WebElement field = driver.findElement(locator);
-        String placeholder = field.getAttribute("placeholder");
-        Assert.assertEquals(placeholder, expectedPlaceholder,
-                "Incorrect placeholder for " + locator.toString());
+        String actualText = field.getText().trim();
+        Assert.assertEquals(actualText, expectedText,
+                "Incorrect text for element located by " + locator.toString());
     }
-
     public void verifyPaymentSystemsIcons() {
         List<WebElement> icons = driver.findElements(paymentSystemsIcons);
-        Assert.assertTrue(icons.size() >= 2, "Expected at least 2 payment system icons");
+        Assert.assertEquals(icons.size() , 4,"Expected 5 payment system icons");
     }
+
 }

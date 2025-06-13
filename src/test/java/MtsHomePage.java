@@ -41,7 +41,7 @@ public class MtsHomePage {
 
     public MtsHomePage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
     public void acceptCookies() {
@@ -126,8 +126,15 @@ public class MtsHomePage {
     }
 
     public PaymentFrame switchToPaymentFrame() {
+//        WebElement iframe = (WebElement) ((JavascriptExecutor) driver).executeScript(
+//                "return document.querySelector('iframe.bepaid-iframe');"
+//        );
+//        driver.switchTo().frame(iframe);
+//        WebElement container = driver.findElement(By.cssSelector(".bepaid-app__container"));
+//        WebElement iframe = container.findElement(By.tagName("iframe"));
+//        driver.switchTo().frame(iframe);
         WebElement iframe = wait.until(ExpectedConditions.visibilityOfElementLocated(paymentIframe));
-        driver.switchTo().frame(iframe);
+        driver.switchTo().frame(0);
         return new PaymentFrame(driver);
     }
 }

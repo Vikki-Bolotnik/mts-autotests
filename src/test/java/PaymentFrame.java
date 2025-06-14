@@ -32,7 +32,7 @@ public class PaymentFrame {
         WebElement amountElement = wait.until(ExpectedConditions.visibilityOfElementLocated(
                 By.xpath("//div[contains(@class, 'pay-description__cost')]//span")
         ));
-       // WebElement amountElement = wait.until(ExpectedConditions.visibilityOfElementLocated(paymentAmount));
+        // WebElement amountElement = wait.until(ExpectedConditions.visibilityOfElementLocated(paymentAmount));
         String amountText = amountElement.getText();
         Assert.assertTrue(amountText.contains(expectedAmount),
                 "Payment amount doesn't match. Expected: " + expectedAmount + ", Actual: " + amountText);
@@ -71,9 +71,18 @@ public class PaymentFrame {
     }
 
     @Step("Проверка иконок платежных систем")
-    public void verifyPaymentSystemsIcons() {
+    public void verifyPaymentSystemsIcons2() {
         List<WebElement> icons = driver.findElements(paymentSystemsIcons);
-        Assert.assertEquals(icons.size() , 4,"Expected 5 payment system icons");
+        Assert.assertEquals(icons.size() , 4,"Expected 4 payment system icons");
     }
+    @Step("Проверка иконок платежных систем")
+    public void verifyPaymentSystemsIcons() {
+        // Сначала находим родительский контейнер
+        WebElement container = driver.findElement(By.cssSelector("div.cards-brands__container"));
 
+        // Затем находим все элементы img внутри этого контейнера
+        List<WebElement> icons = container.findElements(By.tagName("img"));
+
+        Assert.assertEquals(icons.size(), 5, "Expected 5 payment system icons");
+    }
 }

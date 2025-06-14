@@ -128,7 +128,7 @@ public class MtsHomePage {
         continueBtn.click();
     }
 
-    public PaymentFrame switchToPaymentFrame() {
+    public PaymentFrame switchToPaymentFrame2() {
         WebElement iframe = (WebElement) ((JavascriptExecutor) driver).executeScript(
                 "return document.querySelector('iframe.bepaid-iframe');"
         );
@@ -140,4 +140,27 @@ public class MtsHomePage {
 //        driver.switchTo().frame(0);
         return new PaymentFrame(driver);
     }
+
+    public PaymentFrame switchToPaymentFrame() {
+        try {
+            // 1. Ждём появления iframe
+            WebElement iframe = wait.until(ExpectedConditions.presenceOfElementLocated(
+                    By.cssSelector("iframe.bepaid-iframe[src*='checkout.bepaid.by']")
+            ));
+
+            // 2. Переключаемся на него
+            driver.switchTo().frame(iframe);
+
+            // 3. Ждём загрузки контента внутри фрейма
+            wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//div[contains(@class, 'pay-description__cost')]")
+            ));
+
+            return new PaymentFrame(driver);
+        } catch (Exception e) {
+            throw new RuntimeException("Не удалось переключиться на платежный фрейм", e);
+        }
+    }
+
+
 }

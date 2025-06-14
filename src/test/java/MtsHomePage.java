@@ -24,6 +24,10 @@ public class MtsHomePage {
     private final By amountInputField = By.id("connection-sum");
     private static final String paymentHelpPageUrl = "https://www.mts.by/help/poryadok-oplaty-i-bezopasnost-internet-platezhey/";
     private final By paymentIframe = By.cssSelector("iframe.bepaid-iframe");
+    private final By serviceTypeDropdown = By.cssSelector("div.select__wrapper");
+    //    private final By serviceOptions = By.cssSelector("ul.select__list");
+    private final By serviceConnection = By.cssSelector("li.select__item.active");
+
 
     public MtsHomePage(WebDriver driver) {
         this.driver = driver;
@@ -52,7 +56,10 @@ public class MtsHomePage {
         WebElement continueBtn = wait.until(
                 ExpectedConditions.elementToBeClickable(continueButton));
         assert continueBtn.isEnabled() : "Кнопка 'Продолжить' неактивна до заполнения формы";
-
+        driver.findElement(serviceTypeDropdown).click();
+        WebElement serviceOption = wait.until(ExpectedConditions.
+                visibilityOfElementLocated(serviceConnection));
+        serviceOption.click();
         //driver.findElement(By.cssSelector("p.select__now:contains('Услуги связи')")).click();
         //driver.findElement(By.cssSelector("p.select__option:contains('Услуги связи')")).click();
         driver.findElement(phoneInputField).sendKeys(TEST_PHONE);
@@ -61,9 +68,8 @@ public class MtsHomePage {
 
         // Проверка загрузки платежного iframe
         try {
-            WebElement iframe = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                    paymentIframe
-            ));
+            WebElement iframe = wait.until(ExpectedConditions.visibilityOfElementLocated(paymentIframe));
+            //     WebElement iframe2 = wait.until(ExpectedConditions.presenceOfElementLocated(paymentIframe));
             System.out.println("Платежная форма успешно загрузилась");
         } catch (TimeoutException e) {
             throw new AssertionError("Платежный iframe не загрузился после клика");

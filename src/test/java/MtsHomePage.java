@@ -1,3 +1,4 @@
+import io.qameta.allure.Step;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -101,6 +102,7 @@ public class MtsHomePage {
                 "Incorrect placeholder for " + locator.toString());
     }
 
+    @Step("Выбор сервиса: {serviceName}")
     public void selectConnectionService(String serviceName) {
         driver.findElement(serviceTypeDropdown).click();
 
@@ -113,6 +115,7 @@ public class MtsHomePage {
         }
     }
 
+    @Step("Заполнение формы: телефон {phone}, сумма {amount}")
     public void fillPaymentForm(String phone, String amount) {
         WebElement phoneField = wait.until(ExpectedConditions.visibilityOfElementLocated(connectionPhoneInputField));
         phoneField.sendKeys(phone);
@@ -126,15 +129,15 @@ public class MtsHomePage {
     }
 
     public PaymentFrame switchToPaymentFrame() {
-//        WebElement iframe = (WebElement) ((JavascriptExecutor) driver).executeScript(
-//                "return document.querySelector('iframe.bepaid-iframe');"
-//        );
-//        driver.switchTo().frame(iframe);
+        WebElement iframe = (WebElement) ((JavascriptExecutor) driver).executeScript(
+                "return document.querySelector('iframe.bepaid-iframe');"
+        );
+        driver.switchTo().frame(iframe);
 //        WebElement container = driver.findElement(By.cssSelector(".bepaid-app__container"));
 //        WebElement iframe = container.findElement(By.tagName("iframe"));
 //        driver.switchTo().frame(iframe);
-        WebElement iframe = wait.until(ExpectedConditions.visibilityOfElementLocated(paymentIframe));
-        driver.switchTo().frame(0);
+//        WebElement iframe = wait.until(ExpectedConditions.visibilityOfElementLocated(paymentIframe));
+//        driver.switchTo().frame(0);
         return new PaymentFrame(driver);
     }
 }

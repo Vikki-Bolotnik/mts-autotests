@@ -1,3 +1,4 @@
+import io.qameta.allure.Step;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -11,7 +12,7 @@ public class PaymentFrame {
 
     // Локаторы
     private final By paymentAmount = By.xpath("//div[contains(@class, 'pay-description__cost')]/span");
-    private final By phoneNumber = By.xpath("//div[contains(@class, 'pay-description__text");
+    private final By phoneNumber = By.xpath("//div[contains(@class, 'pay-description__text')]");
     private final By cardNumberField = By.xpath("//label[text()='Номер карты']");
     private final By expiryDateField = By.xpath("//label[text()='Срок действия']");
     private final By cvcField = By.xpath("//label[text()='CVC']");
@@ -21,12 +22,17 @@ public class PaymentFrame {
 
     public PaymentFrame(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(20));
     }
 
+    @Step("Проверка деталей платежа: сумма {expectedAmount}, телефон {expectedPhone}")
     public void verifyPaymentDetails(String expectedAmount, String expectedPhone) {
-
-        WebElement amountElement = wait.until(ExpectedConditions.visibilityOfElementLocated(paymentAmount));
+        System.out.println(driver.getPageSource());
+        //System.out.println(driver.findElements(By.xpath("//label")).size());
+        WebElement amountElement = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//div[contains(@class, 'pay-description__cost')]//span")
+        ));
+       // WebElement amountElement = wait.until(ExpectedConditions.visibilityOfElementLocated(paymentAmount));
         String amountText = amountElement.getText();
         Assert.assertTrue(amountText.contains(expectedAmount),
                 "Payment amount doesn't match. Expected: " + expectedAmount + ", Actual: " + amountText);
@@ -41,6 +47,7 @@ public class PaymentFrame {
                 "Phone number doesn't match. Expected: " + expectedPhone + ", Actual: " + phoneElement.getText());
     }
 
+    @Step("Проверка плейсхолдеров полей карты")
     public void verifyCardFieldsPlaceholders() {
         verifyFieldText(cardNumberField, "Номер карты");
         verifyFieldText(expiryDateField, "Срок действия");
@@ -55,12 +62,15 @@ public class PaymentFrame {
 //                "Incorrect placeholder for " + locator.toString());
 //    }
 
+    @Step("Проверка текста поля: ожидаемый текст - {expectedText}")
     private void verifyFieldText(By locator, String expectedText) {
         WebElement field = driver.findElement(locator);
         String actualText = field.getText().trim();
         Assert.assertEquals(actualText, expectedText,
                 "Incorrect text for element located by " + locator.toString());
     }
+
+    @Step("Проверка иконок платежных систем")
     public void verifyPaymentSystemsIcons() {
         List<WebElement> icons = driver.findElements(paymentSystemsIcons);
         Assert.assertEquals(icons.size() , 4,"Expected 5 payment system icons");

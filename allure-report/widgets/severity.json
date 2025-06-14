@@ -1,0 +1,1 @@
+[{"uid":"85f2c8b386ebbdbb","name":"verifyPlaceholdersForAllServices","time":{"start":1749859654754,"stop":1749859659079,"duration":4325},"status":"passed","severity":"normal"},{"uid":"c46a556fd1084a8d","name":"testMobilePaymentForm","time":{"start":1749859659528,"stop":1749859681870,"duration":22342},"status":"broken","severity":"critical"}]

@@ -10,14 +10,13 @@ public class PaymentFrame {
     private final WebDriver driver;
     private final WebDriverWait wait;
 
-    // Локаторы
-    private final By paymentAmount = By.xpath("//div[contains(@class, 'pay-description__cost')]/span");
+    private final By paymentAmount = By.xpath("//div[contains(@class, 'pay-description__cost')]//span");
     private final By phoneNumber = By.xpath("//div[contains(@class, 'pay-description__text')]");
     private final By cardNumberField = By.xpath("//label[text()='Номер карты']");
     private final By expiryDateField = By.xpath("//label[text()='Срок действия']");
     private final By cvcField = By.xpath("//label[text()='CVC']");
     private final By cardNameField = By.xpath("//label[text()='Имя и фамилия на карте']");
-    private final By paymentSystemsIcons = By.xpath("//div[contains(@class, 'cards-brands cards-brands__container')]");
+    private final By paymentSystemsIcons = By.cssSelector("div.cards-brands__container");
     private final By payButton = By.xpath("//button[contains(text(),'Оплатить')]");
 
     public PaymentFrame(WebDriver driver) {
@@ -27,12 +26,9 @@ public class PaymentFrame {
 
     @Step("Проверка деталей платежа: сумма {expectedAmount}, телефон {expectedPhone}")
     public void verifyPaymentDetails(String expectedAmount, String expectedPhone) {
-        System.out.println(driver.getPageSource());
+        //System.out.println(driver.getPageSource());
         //System.out.println(driver.findElements(By.xpath("//label")).size());
-        WebElement amountElement = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//div[contains(@class, 'pay-description__cost')]//span")
-        ));
-        // WebElement amountElement = wait.until(ExpectedConditions.visibilityOfElementLocated(paymentAmount));
+        WebElement amountElement = wait.until(ExpectedConditions.visibilityOfElementLocated(paymentAmount));
         String amountText = amountElement.getText();
         Assert.assertTrue(amountText.contains(expectedAmount),
                 "Payment amount doesn't match. Expected: " + expectedAmount + ", Actual: " + amountText);
@@ -71,18 +67,15 @@ public class PaymentFrame {
     }
 
     @Step("Проверка иконок платежных систем")
-    public void verifyPaymentSystemsIcons2() {
-        List<WebElement> icons = driver.findElements(paymentSystemsIcons);
-        Assert.assertEquals(icons.size() , 4,"Expected 4 payment system icons");
-    }
-    @Step("Проверка иконок платежных систем")
     public void verifyPaymentSystemsIcons() {
-        // Сначала находим родительский контейнер
-        WebElement container = driver.findElement(By.cssSelector("div.cards-brands__container"));
-
-        // Затем находим все элементы img внутри этого контейнера
+        WebElement container = driver.findElement(paymentSystemsIcons);
         List<WebElement> icons = container.findElements(By.tagName("img"));
-
         Assert.assertEquals(icons.size(), 5, "Expected 5 payment system icons");
     }
+
+//    @Step("Проверка иконок платежных систем")
+//    public void verifyPaymentSystemsIcons2() {
+//        List<WebElement> icons = driver.findElements(paymentSystemsIcons);
+//        Assert.assertEquals(icons.size() , 1,"Expected 1 payment system icons");
+//    }
 }

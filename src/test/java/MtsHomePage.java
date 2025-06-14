@@ -11,10 +11,6 @@ public class MtsHomePage {
     private final WebDriver driver;
     private final WebDriverWait wait;
 
-    // Локаторы
-    private final By paymentBlockTitle = By.xpath("//h2[contains(., 'Онлайн пополнение') and contains(., 'без комиссии')]");
-    private final By paymentSystemsLogos = By.cssSelector("div.pay__partners ul li img");
-    private final By detailsLink = By.linkText("Подробнее о сервисе");
     private final By continueButton = By.xpath("//button[contains(text(), 'Продолжить')]");
 
     private final By connectionPhoneInputField = By.id("connection-phone");
@@ -37,7 +33,8 @@ public class MtsHomePage {
     private final By serviceOptions = By.cssSelector("ul.select__list");
     private final By serviceConnection = By.cssSelector("li.select__item.active");
 
-    private final By paymentIframe = By.cssSelector("iframe.bepaid-iframe");
+    private final By paymentIframe = By.cssSelector("iframe.bepaid-iframe[src*='checkout.bepaid.by']");
+    private final By paymentCostSection = By.xpath("//div[contains(@class, 'pay-description__cost')]");
     private final By cookieAcceptButton = By.id("cookie-agree");
 
     public MtsHomePage(WebDriver driver) {
@@ -53,7 +50,6 @@ public class MtsHomePage {
             System.out.println("Cookie popup not found or already closed");
         }
     }
-
 
     public void selectServiceType(String serviceName) {
         driver.findElement(serviceTypeDropdown).click();
@@ -128,39 +124,31 @@ public class MtsHomePage {
         continueBtn.click();
     }
 
-    public PaymentFrame switchToPaymentFrame2() {
-        WebElement iframe = (WebElement) ((JavascriptExecutor) driver).executeScript(
-                "return document.querySelector('iframe.bepaid-iframe');"
-        );
-        driver.switchTo().frame(iframe);
-//        WebElement container = driver.findElement(By.cssSelector(".bepaid-app__container"));
-//        WebElement iframe = container.findElement(By.tagName("iframe"));
-//        driver.switchTo().frame(iframe);
-//        WebElement iframe = wait.until(ExpectedConditions.visibilityOfElementLocated(paymentIframe));
-//        driver.switchTo().frame(0);
-        return new PaymentFrame(driver);
-    }
-
+    @Step("Переключение на платежный фрейм")
     public PaymentFrame switchToPaymentFrame() {
         try {
-            // 1. Ждём появления iframe
-            WebElement iframe = wait.until(ExpectedConditions.presenceOfElementLocated(
-                    By.cssSelector("iframe.bepaid-iframe[src*='checkout.bepaid.by']")
-            ));
-
-            // 2. Переключаемся на него
+            WebElement iframe = wait.until(ExpectedConditions.presenceOfElementLocated(paymentIframe));
             driver.switchTo().frame(iframe);
-
-            // 3. Ждём загрузки контента внутри фрейма
-            wait.until(ExpectedConditions.visibilityOfElementLocated(
-                    By.xpath("//div[contains(@class, 'pay-description__cost')]")
-            ));
-
+            wait.until(ExpectedConditions.visibilityOfElementLocated(paymentCostSection));
             return new PaymentFrame(driver);
         } catch (Exception e) {
             throw new RuntimeException("Не удалось переключиться на платежный фрейм", e);
         }
     }
-
+//    public PaymentFrame switchToPaymentFrame2() {
+//        WebElement iframe = (WebElement) ((JavascriptExecutor) driver).executeScript(
+//                "return document.querySelector('iframe.bepaid-iframe');"
+//        );
+//        driver.switchTo().frame(iframe);
+//
+////        WebElement container = driver.findElement(By.cssSelector(".bepaid-app__container"));
+////        WebElement iframe = container.findElement(By.tagName("iframe"));
+////        driver.switchTo().frame(iframe);
+//
+////        WebElement iframe = wait.until(ExpectedConditions.visibilityOfElementLocated(paymentIframe));
+////        driver.switchTo().frame(0);
+//
+//        return new PaymentFrame(driver);
+//    }
 
 }

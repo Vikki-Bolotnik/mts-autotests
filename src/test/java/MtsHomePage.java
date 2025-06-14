@@ -25,7 +25,6 @@ public class MtsHomePage {
     private static final String paymentHelpPageUrl = "https://www.mts.by/help/poryadok-oplaty-i-bezopasnost-internet-platezhey/";
     private final By paymentIframe = By.cssSelector("iframe.bepaid-iframe");
     private final By serviceTypeDropdown = By.cssSelector("div.select__wrapper");
-    //    private final By serviceOptions = By.cssSelector("ul.select__list");
     private final By serviceConnection = By.cssSelector("li.select__item.active");
 
 
@@ -60,8 +59,6 @@ public class MtsHomePage {
         WebElement serviceOption = wait.until(ExpectedConditions.
                 visibilityOfElementLocated(serviceConnection));
         serviceOption.click();
-        //driver.findElement(By.cssSelector("p.select__now:contains('Услуги связи')")).click();
-        //driver.findElement(By.cssSelector("p.select__option:contains('Услуги связи')")).click();
         driver.findElement(phoneInputField).sendKeys(TEST_PHONE);
         driver.findElement(amountInputField).sendKeys(SUM);
         driver.findElement(continueButton).click();
@@ -87,16 +84,4 @@ public class MtsHomePage {
 
         }
     }
-
-    //    public void handleCookieBanner() {
-//        try {
-//            driver.switchTo().defaultContent();
-//            driver.switchTo().frame(0);
-//            driver.findElement(By.xpath("//button[contains(text(), 'Отклонить')]")).click();
-//            driver.switchTo().defaultContent();
-//        } catch (Exception e) {
-//            System.out.println("Cookie баннер не найден или уже закрыт");
-//        }
-//    }
 }
-

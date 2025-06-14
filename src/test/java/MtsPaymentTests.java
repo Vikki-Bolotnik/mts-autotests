@@ -2,7 +2,6 @@ import io.qameta.allure.*;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.testng.Assert;
 
 @Epic("Платежи МТС")
 @Feature("Тестирование платежной формы")
@@ -24,7 +23,7 @@ public class MtsPaymentTests extends BaseTest {
     @Test(priority = 1)
     @Story("Проверка плейсхолдеров для различных сервисов")
     @Description("Проверка корректности отображения плейсхолдеров для всех сервисов")
-    @Severity(SeverityLevel.NORMAL)
+    //   @Severity(SeverityLevel.NORMAL)
     public void verifyPlaceholdersForAllServices() {
         String[] services = {"Услуги связи", "Домашний интернет", "Рассрочка", "Задолженность"};
 
@@ -36,7 +35,7 @@ public class MtsPaymentTests extends BaseTest {
     @Test(priority = 2)
     @Story("Тестирование формы мобильного платежа")
     @Description("Проверка формы оплаты для услуг связи")
-    @Severity(SeverityLevel.CRITICAL)
+    //   @Severity(SeverityLevel.CRITICAL)
     public void testMobilePaymentForm() {
         Allure.step("Шаг 1: Выбор сервиса 'Услуги связи'");
         mtsHomePage.selectConnectionService("Услуги связи");
